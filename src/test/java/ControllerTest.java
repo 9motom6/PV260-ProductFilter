@@ -5,9 +5,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.never;
@@ -26,11 +29,11 @@ public class ControllerTest {
     private Filter<Product> atLeastTwoFilter;
 
     private Product blackDogFor500;
-    private Product blueCatFor1010;
     private Product yellowMouseFor840;
     private Product blackCatFor1001;
 
     private List<Product> products;
+    private Controller controller;
 
     @Before
     public void beforeMethod() {
@@ -41,7 +44,7 @@ public class ControllerTest {
 
         blackDogFor500 = new Product(0, "Dog", Color.BLACK, BigDecimal.valueOf(500));
         blackCatFor1001 = new Product(0, "Cat Black", Color.BLACK, BigDecimal.valueOf(1001));
-        blueCatFor1010 = new Product(0, "Cat", Color.BLUE, BigDecimal.valueOf(1010));
+        Product blueCatFor1010 = new Product(0, "Cat", Color.BLUE, BigDecimal.valueOf(1010));
         yellowMouseFor840 = new Product(0, "Mouse", Color.YELLOW, BigDecimal.valueOf(840));
         blackColorFilter = new ColorFilter(Color.BLACK);
         whiteColorFilter = new ColorFilter(Color.WHITE);
@@ -52,6 +55,8 @@ public class ControllerTest {
         products.add(blueCatFor1010);
         products.add(yellowMouseFor840);
         products.add(blackCatFor1001);
+
+        controller = new Controller(input, output, logger);
 
         try {
             when(input.obtainProducts()).thenReturn(products);
@@ -67,7 +72,6 @@ public class ControllerTest {
     public void select_selectWithBlackFilter_oneItemResultSuccess() {
         products.remove(blackCatFor1001);
 
-        Controller controller = new Controller(input, output, logger);
         controller.select(blackColorFilter);
 
         Mockito.verify(output).postSelectedProducts(new ArrayList<>(Collections.singletonList(blackDogFor500)));
@@ -75,7 +79,6 @@ public class ControllerTest {
 
     @Test
     public void select_selectWithPriceLessThatThousandFilter_twoItemsResultSuccess() {
-        Controller controller = new Controller(input, output, logger);
         controller.select(priceLessThanThousandFilter);
 
         Mockito.verify(output).postSelectedProducts(new ArrayList<>(Arrays.asList(blackDogFor500, yellowMouseFor840)));
@@ -87,7 +90,6 @@ public class ControllerTest {
         products.remove(yellowMouseFor840);
 
 
-        Controller controller = new Controller(input, output, logger);
         controller.select(priceLessThanThousandFilter);
 
         Mockito.verify(output).postSelectedProducts(new ArrayList<>(Collections.<Product>emptyList()));
@@ -95,7 +97,6 @@ public class ControllerTest {
 
     @Test
     public void select_selectWithAtLeastTwoFiltersBlackAndLessThanThousand_oneItemResultSuccess() {
-        Controller controller = new Controller(input, output, logger);
         controller.select(atLeastTwoFilter);
 
         Mockito.verify(output).postSelectedProducts(new ArrayList<>(Collections.singletonList(blackDogFor500)));
@@ -105,7 +106,6 @@ public class ControllerTest {
     public void select_selectWithAtLeastTwoFilterBlackAndLessThanThousand_zeroItemsResultSuccess() {
         products.remove(blackDogFor500);
 
-        Controller controller = new Controller(input, output, logger);
         controller.select(atLeastTwoFilter);
 
         Mockito.verify(output).postSelectedProducts(new ArrayList<>(Collections.<Product>emptyList()));
@@ -113,7 +113,6 @@ public class ControllerTest {
 
     @Test
     public void select_selectWithBlackFilter_twoItemResultSuccess() {
-        Controller controller = new Controller(input, output, logger);
         controller.select(blackColorFilter);
 
         Mockito.verify(output).postSelectedProducts(new ArrayList<>(Arrays.asList(blackDogFor500, blackCatFor1001)));
@@ -121,7 +120,6 @@ public class ControllerTest {
 
     @Test
     public void select_selectWithWhiteFilter_emptyResultSuccess() {
-        Controller controller = new Controller(input, output, logger);
         controller.select(whiteColorFilter);
 
         Mockito.verify(output).postSelectedProducts(new ArrayList<>(Collections.<Product>emptyList()));
@@ -130,7 +128,6 @@ public class ControllerTest {
     //================================Second subtask tests
     @Test
     public void select_selectWithBlackFilter_correctLogMessageOnSuccess() {
-        Controller controller = new Controller(input, output, logger);
         controller.select(blackColorFilter);
 
         Mockito.verify(logger).log(Controller.TAG_CONTROLLER, "Successfully selected 2 out of 4 available products.");
@@ -138,7 +135,6 @@ public class ControllerTest {
 
     @Test
     public void select_selectWithWhiteFilterZeroResultSize_correctLogMessageOnSuccess() {
-        Controller controller = new Controller(input, output, logger);
         controller.select(whiteColorFilter);
 
         Mockito.verify(logger).setLevel("INFO");
@@ -156,7 +152,6 @@ public class ControllerTest {
             fail("An error occurred when creating input mock");
         }
 
-        Controller controller = new Controller(input, output, logger);
         controller.select(whiteColorFilter);
 
 
@@ -175,7 +170,6 @@ public class ControllerTest {
             fail("An error occurred when creating input mock");
         }
 
-        Controller controller = new Controller(input, output, logger);
         controller.select(whiteColorFilter);
 
         Mockito.verify(output, never()).postSelectedProducts(Matchers.<Collection<Product>>any());
