@@ -62,6 +62,7 @@ public class ControllerTest {
 
     }
 
+    //================================First subtask tests
     @Test
     public void select_selectWithBlackFilter_oneItemResultSuccess() {
         products.remove(blackCatFor1001);
@@ -93,8 +94,7 @@ public class ControllerTest {
     }
 
     @Test
-    public void select_selectWithAtLeastNFilter_oneItemResultSuccess() {
-
+    public void select_selectWithAtLeastTwoFiltersBlackAndLessThanThousand_oneItemResultSuccess() {
         Controller controller = new Controller(input, output, logger);
         controller.select(atLeastTwoFilter);
 
@@ -102,7 +102,7 @@ public class ControllerTest {
     }
 
     @Test
-    public void select_selectWithAtLeastNFilter_zeroItemsResultSuccess() {
+    public void select_selectWithAtLeastTwoFilterBlackAndLessThanThousand_zeroItemsResultSuccess() {
         products.remove(blackDogFor500);
 
         Controller controller = new Controller(input, output, logger);
@@ -120,13 +120,14 @@ public class ControllerTest {
     }
 
     @Test
-    public void select_selectWithBlackAndWhiteFilter_emptyResultSuccess() {
+    public void select_selectWithWhiteFilter_emptyResultSuccess() {
         Controller controller = new Controller(input, output, logger);
         controller.select(whiteColorFilter);
 
         Mockito.verify(output).postSelectedProducts(new ArrayList<>(Collections.<Product>emptyList()));
     }
 
+    //================================Second subtask tests
     @Test
     public void select_selectWithBlackFilter_correctLogMessageOnSuccess() {
         Controller controller = new Controller(input, output, logger);
@@ -144,6 +145,8 @@ public class ControllerTest {
         Mockito.verify(logger).log(Controller.TAG_CONTROLLER, "Successfully selected 0 out of 4 available products.");
     }
 
+    //================================Third subtask test
+
     @Test
     public void select_selectWithBlackFilterThrowException_exceptionLogged() {
         try {
@@ -160,6 +163,8 @@ public class ControllerTest {
         Mockito.verify(logger).setLevel("ERROR");
         Mockito.verify(logger).log(Controller.TAG_CONTROLLER, "Filter procedure failed with exception: " + ObtainFailedException.class.getName());
     }
+
+    //================================Fourth subtask test
 
     @Test
     public void select_selectWithBlackFilterThrowException_nothingPassedToOutput() {
