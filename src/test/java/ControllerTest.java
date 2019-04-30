@@ -125,6 +125,15 @@ public class ControllerTest {
         Mockito.verify(output).postSelectedProducts(new ArrayList<>(Collections.<Product>emptyList()));
     }
 
+    @Test
+    public void select_selectWithWhiteFilter_oneItemResultSuccess() {
+        Input input = new DummyInput();
+        Controller controller = new Controller(input,output,logger);
+        controller.select(whiteColorFilter);
+
+        Mockito.verify(output).postSelectedProducts(new ArrayList<>(Collections.singletonList(new Product(99, "Pencil", Color.WHITE, BigDecimal.valueOf(500)))));
+    }
+
     //================================Second subtask tests
     @Test
     public void select_selectWithBlackFilter_correctLogMessageOnSuccess() {
@@ -173,6 +182,14 @@ public class ControllerTest {
         controller.select(whiteColorFilter);
 
         Mockito.verify(output, never()).postSelectedProducts(Matchers.<Collection<Product>>any());
+    }
+
+
+    private class DummyInput implements Input{
+        @Override
+        public Collection<Product> obtainProducts(){
+            return Collections.singletonList(new Product(99, "Pencil", Color.WHITE, BigDecimal.valueOf(500)));
+        }
     }
 
 
